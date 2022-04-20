@@ -8,14 +8,14 @@ public class Department implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Integer id;
-	private String nome;
+	private String name;
 	
 	public Department() {
 	}
 
-	public Department(Integer id, String nome) {
+	public Department(Integer id, String name) {
 		this.id = id;
-		this.nome = nome;
+		this.name = name;
 	}
 
 	public Integer getId() {
@@ -26,17 +26,19 @@ public class Department implements Serializable {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getName() {
+		return name;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setName(String name) {
+		this.name = name;
 	}
 
+	
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, nome);
+		return Objects.hash(id, name);
 	}
 
 	@Override
@@ -48,13 +50,14 @@ public class Department implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Department other = (Department) obj;
-		return Objects.equals(id, other.id) && Objects.equals(nome, other.nome);
+		return Objects.equals(id, other.id) && Objects.equals(name, other.name);
 	}
 
 	@Override
 	public String toString() {
-		return "Department [id=" + id + ", nome=" + nome + "]";
+		return "Department [id=" + id + ", name=" + name + "]";
 	}
+
 	
 	
 }
