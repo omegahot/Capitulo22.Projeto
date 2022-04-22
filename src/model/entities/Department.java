@@ -1,7 +1,6 @@
 package model.entities;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public class Department implements Serializable {
 
@@ -9,7 +8,7 @@ public class Department implements Serializable {
 
 	private Integer id;
 	private String name;
-	
+
 	public Department() {
 	}
 
@@ -34,11 +33,13 @@ public class Department implements Serializable {
 		this.name = name;
 	}
 
-	
-	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, name);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
 	}
 
 	@Override
@@ -50,7 +51,17 @@ public class Department implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Department other = (Department) obj;
-		return Objects.equals(id, other.id) && Objects.equals(name, other.name);
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 
 	@Override
@@ -58,6 +69,4 @@ public class Department implements Serializable {
 		return "Department [id=" + id + ", name=" + name + "]";
 	}
 
-	
-	
 }
