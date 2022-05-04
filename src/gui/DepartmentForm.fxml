@@ -35,6 +35,6 @@
             </HBox>
          </children>
       </GridPane>
-      <Label fx:id="labelErrorName" layoutX="21.0" layoutY="125.0" prefHeight="17.0" prefWidth="11.0" textFill="#f50000" />
+      <Label fx:id="labelErrorName" layoutX="9.0" layoutY="125.0" prefHeight="17.0" prefWidth="546.0" textFill="#f50000" />
    </children>
 </AnchorPane>
