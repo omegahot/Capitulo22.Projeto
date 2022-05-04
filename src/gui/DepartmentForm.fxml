@@ -33,8 +33,8 @@
                   <Button fx:id="btCancel" mnemonicParsing="false" onAction="#onBtCancelAction" text="Cancel" />
                </children>
             </HBox>
+            <Label fx:id="labelErrorName" prefHeight="17.0" prefWidth="204.0" textFill="#f50000" GridPane.columnIndex="2" GridPane.rowIndex="1" />
          </children>
       </GridPane>
-      <Label fx:id="labelErrorName" layoutX="9.0" layoutY="125.0" prefHeight="17.0" prefWidth="546.0" textFill="#f50000" />
    </children>
 </AnchorPane>
