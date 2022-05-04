@@ -2,6 +2,7 @@ package db;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -67,5 +68,15 @@ public class DB {
 			}
 		}
 	}	
+	
+	public static void closeCallableStatement(CallableStatement cs) {
+		if (cs != null) {
+			try {
+				cs.close();
+			} catch (SQLException e) {
+				throw new DbException(e.getMessage());
+			}
+		}
+	}
 
 }
