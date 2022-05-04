@@ -170,8 +170,6 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 			
 			rs = (ResultSet) cs.getObject(1);
 			
-			rs = ps.executeQuery();
-			
 			if (rs.next()) {
 				Department dep = new Department(
 						rs.getInt("id"), 
