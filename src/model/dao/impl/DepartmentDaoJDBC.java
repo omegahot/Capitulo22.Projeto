@@ -115,7 +115,6 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 	@Override
 	public void deleteById(Integer id) {
 
-		PreparedStatement ps = null;
 		CallableStatement cs = null;
 		
 		try {
@@ -123,31 +122,29 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 			
 			//ps = conn.prepareStatement("delete from department where id = ?");
 			//ps.setInt(1, id);
-			cs = conn.prepareCall("{call pkg_department.prc_deleta_department(?)}");
+			cs = conn.prepareCall("{call pkg_department.prc_deleta_department(?,?)}");
 			cs.registerOutParameter(1, OracleTypes.INTEGER);
+			cs.registerOutParameter(2, OracleTypes.VARCHAR);
 			cs.setInt(1, id);
 			cs.execute();
-			ps = cs;		
 			
-			int rowsAffected = ps.executeUpdate();
-			
-			if (rowsAffected == 0) {
-				throw new DbException("Nenhum registro afetado!");
-			} 
-			else if (rowsAffected > 1) {
-				conn.rollback();
-				throw new DbException("Erro ao deletar o registro!");
+			String msgRetorno = cs.getString(2);
+
+			if (msgRetorno.contains("ERRO") || msgRetorno.contains("ORA")) {
+				Alerts.alerts("Erro", null, msgRetorno, AlertType.ERROR);
 			}
+			
 			else {
-				conn.commit();
-			}
+				Alerts.alerts(null, null, msgRetorno, AlertType.INFORMATION);
+			} 
+			
 			
 		}
 		catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(ps);
+			DB.closeCallableStatement(cs);
 		}
 	}
 
