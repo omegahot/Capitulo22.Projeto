@@ -1,5 +1,6 @@
 package model.dao.impl;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +16,7 @@ import db.DbException;
 import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
+import oracle.jdbc.OracleTypes;
 
 public class SellerDaoJDBC implements SellerDao {
 	
@@ -215,40 +217,35 @@ public class SellerDaoJDBC implements SellerDao {
 	private Department instanciateDepartment(ResultSet rs) throws SQLException {
 		Department dep = new Department(
 				rs.getInt("departmentId"),
-				rs.getString("depName"));
+				rs.getString("departmentName"));
 
 		return dep;
 	}
 
 	@Override
 	public List<Seller> findAll() {
-		PreparedStatement ps = null;
+
 		ResultSet rs = null;
+		CallableStatement cs = null;
 		
 		try {
 			
-			ps = conn.prepareStatement(
-					"select seller.*, "
-					+ "	 d.name as depName "
-					+ "  from seller "
-					+ "  join department d on seller.departmentId = d.id "
-					+ " order by name "
-					);
+			cs = conn.prepareCall("{call pkg_seller.prc_retorna_tudo(?)}");
+			cs.registerOutParameter(1, OracleTypes.REF_CURSOR);
+			cs.execute();
 			
-			// Executa a consulta no banco
-			rs = ps.executeQuery();
-			
-			List<Seller> listSeller = new ArrayList<Seller>();
+			rs = (ResultSet) cs.getObject(1);
+			List<Seller> listSeller = new ArrayList<>();
 			Map<Integer, Department> map = new HashMap<Integer, Department>();
 			
 			while (rs.next()) {
-					
+				
 				Department dep = map.get(rs.getInt("departmentId"));
-
+				
 				if (dep == null) {
 					dep = instanciateDepartment(rs);
-					map.put(rs.getInt("departmentId"), dep);
-				}
+    				map.put(rs.getInt("departmentId"), dep);
+    			}
 				
 				Seller obj = instanciateSeller(rs, dep);
 				listSeller.add(obj);
@@ -261,8 +258,8 @@ public class SellerDaoJDBC implements SellerDao {
 		   throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(ps);
 			DB.closeResultSet(rs);
+			DB.closeCallableStatement(cs);
 		}
 
 	}
