@@ -204,10 +204,11 @@ public class SellerDaoJDBC implements SellerDao {
 
 	private Seller instanciateSeller(ResultSet rs, Department dep) throws SQLException {
 		Seller obj = new Seller(
-				rs.getInt("Id"), 
+				rs.getInt("id"), 
 				rs.getString("name"), 
 				rs.getString("email"),
-				rs.getDate("birthDate"),
+				new java.util.Date(rs.getTimestamp("birthDate").getTime()),
+				//rs.getDate("birthDate"),
 				rs.getDouble("baseSalary"),
 				dep);
 
