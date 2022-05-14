@@ -1,6 +1,7 @@
 package gui;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -40,6 +41,16 @@ public class SellerListController implements Initializable, DataChangeListener {
 	@FXML
 	private TableColumn<Seller, String> tableColumnName;
 	
+	@FXML
+	private TableColumn<Seller, String> tableColumnEmail;
+	
+	@FXML
+	private TableColumn<Seller, Date> tableColumnBirthDate;
+	
+	@FXML
+	private TableColumn<Seller, Double> tableColumnBaseSalary;
+	
+
 	@FXML
 	private TableColumn<Seller, Seller> tableColumnEDIT;
 	
@@ -83,8 +94,15 @@ public class SellerListController implements Initializable, DataChangeListener {
 
 	private void initializeNodes() {
 		
-		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("Id"));
-		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("Name"));
+		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
+		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
+		tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+		tableColumnBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+		Utils.formatTableColumnDate(tableColumnBirthDate, "dd/MM/yyyy");
+		
+		tableColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
+		Utils.formatTableColumnDouble(tableColumnBaseSalary, 2);
+		//tableColumnDepartmentName.setCellValueFactory(new PropertyValueFactory<>("DepartmentName"));
 		
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewSeller.prefHeightProperty().bind(stage.heightProperty());
@@ -127,7 +145,7 @@ public class SellerListController implements Initializable, DataChangeListener {
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tableColumnEDIT.setCellFactory(param -> new TableCell<Seller, Seller>(){
 			
-			private final Button button = new Button("edit");
+			private final Button button = new Button("Edit");
 			
 			@Override
 			protected void updateItem(Seller obj, boolean empty) {

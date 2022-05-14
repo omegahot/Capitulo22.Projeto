@@ -151,7 +151,6 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 	@Override
 	public Department findById(Integer id) {
 
-		PreparedStatement ps = null;
 		CallableStatement cs = null;
 		ResultSet rs = null;
 		
@@ -183,8 +182,9 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 			throw new DbException(e.getMessage());
 		} 
 		finally {
+			DB.closeCallableStatement(cs);
 			DB.closeResultSet(rs);
-			DB.closeStatement(ps);
+			
 		}
 		
 	}
