@@ -32,10 +32,6 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 
 		
 		try {
-			conn.setAutoCommit(false);
-			//ps = conn.prepareStatement("insert into department (name) values (?)", Statement.RETURN_GENERATED_KEYS);
-			//ps = conn.prepareStatement("exec pkg_department.prc_insere_department (?, ?)");
-			//ps.setString(1, obj.getName());
 			
 			cs = conn.prepareCall("{call pkg_department.prc_insere_department(?,?,?)}");
 			cs.registerOutParameter(1, OracleTypes.VARCHAR);
@@ -79,13 +75,12 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 		try {
 			
 			conn.setAutoCommit(false);
-			
-			//ps = conn.prepareStatement("update department set name = ? where id = ?");
-			//ps = conn.prepareStatement("exec pkg_department.prc_atualiza_department (?, ?, ?)");
+
 			cs = conn.prepareCall("{call pkg_department.prc_atualiza_department(?,?,?)}");
 			cs.registerOutParameter(1, OracleTypes.INTEGER);
 			cs.registerOutParameter(2, OracleTypes.VARCHAR);
 			cs.registerOutParameter(3, OracleTypes.VARCHAR);
+			
 			cs.setInt(1, obj.getId());
 			cs.setString(2, obj.getName());
 			cs.execute();
@@ -118,10 +113,7 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 		CallableStatement cs = null;
 		
 		try {
-			conn.setAutoCommit(false);
 			
-			//ps = conn.prepareStatement("delete from department where id = ?");
-			//ps.setInt(1, id);
 			cs = conn.prepareCall("{call pkg_department.prc_deleta_department(?,?)}");
 			cs.registerOutParameter(1, OracleTypes.INTEGER);
 			cs.registerOutParameter(2, OracleTypes.VARCHAR);

@@ -2,10 +2,10 @@ package model.dao.impl;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +13,8 @@ import java.util.Map;
 
 import db.DB;
 import db.DbException;
+import gui.util.Alerts;
+import javafx.scene.control.Alert.AlertType;
 import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
@@ -29,38 +31,51 @@ public class SellerDaoJDBC implements SellerDao {
 	@Override
 	public void insert(Seller obj) {
 		
-		PreparedStatement ps = null;
+		CallableStatement cs = null;
 		
 		try {
 			
-			ps = conn.prepareStatement (
-					"insert into seller (name, email, birthDate, baseSalary, departmentId) "
-					+ "values "
-					+ "(?, ?, ?, ?, ?) ", Statement.RETURN_GENERATED_KEYS);
+			cs = conn.prepareCall("{call pkg_seller.prc_insere_seller(?,?,?,?,?,?,?)}");
+			cs.registerOutParameter(1, OracleTypes.VARCHAR);
+			cs.registerOutParameter(2, OracleTypes.VARCHAR);
+			cs.registerOutParameter(3, OracleTypes.DATE);
+			cs.registerOutParameter(4, OracleTypes.NUMBER);
+			cs.registerOutParameter(5, OracleTypes.INTEGER);
+			cs.registerOutParameter(6, OracleTypes.INTEGER);
+			cs.registerOutParameter(7, OracleTypes.VARCHAR);
 			
-			ps.setString(1, obj.getName());
-			ps.setString(2, obj.getEmail());
-			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
-			ps.setDouble(4, obj.getBaseSalary());
-			ps.setInt(5, obj.getDepartment().getId());
+			cs.execute();
 			
-			int rowsAffected = ps.executeUpdate();
+			cs.setString(1, obj.getName());
+			cs.setString(2, obj.getEmail());
+			cs.setDate(3, new Date(obj.getBirthDate().getTime()));
+			cs.setDouble(4, obj.getBaseSalary());
+			cs.setInt(5, obj.getDepartment().getId());
+			cs.setInt(6, obj.getId());
 			
-			if (rowsAffected > 0) {
-				ResultSet rs = ps.getGeneratedKeys();
-				if (rs.next()) {
-					int id = rs.getInt(1);
-					obj.setId(id);
-				} 
-				DB.closeResultSet(rs);
+			
+//			obj.setName(cs.getString(1));
+//			obj.setEmail(cs.getString(2));
+//			obj.setBirthDate(new java.util.Date(cs.getDate(3).getTime()));
+//			obj.setBaseSalary(cs.getDouble(4));
+//			obj.getDepartment().setId(5);
+//			obj.setId(6);
+			
+			String msgRetorno = cs.getString(7);
+			
+			if (msgRetorno.contains("ERRO") || msgRetorno.contains("ORA")) {
+				Alerts.alerts("Erro ao Gravar o Registro", null, msgRetorno, AlertType.ERROR);
 			}
-			
+			else {
+				Alerts.alerts(null, null, msgRetorno, AlertType.INFORMATION);
+			}
+				
 		} 
 		catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} 
 		finally {
-			DB.closeStatement(ps);
+			DB.closeCallableStatement(cs);
 		}
 		
 	}
@@ -68,45 +83,61 @@ public class SellerDaoJDBC implements SellerDao {
 	@Override
 	public void update(Seller obj) {
 
-		PreparedStatement ps = null;
+		CallableStatement cs = null;
 		
 		try {
-			conn.setAutoCommit(false);
+
+			cs = conn.prepareCall("{call pkg_seller.prc_atualiza_seller(?,?,?,?,?,?,?)}");
+			cs.registerOutParameter(1, OracleTypes.INTEGER);
+			cs.registerOutParameter(2, OracleTypes.VARCHAR);
+			cs.registerOutParameter(3, OracleTypes.VARCHAR);
+			cs.registerOutParameter(4, OracleTypes.DATE);
+			cs.registerOutParameter(5, OracleTypes.NUMBER);
+			cs.registerOutParameter(6, OracleTypes.INTEGER);
+			cs.registerOutParameter(7, OracleTypes.VARCHAR);
 			
-			ps = conn.prepareStatement(
-					"update seller set "
-					+ "name = ?, "
-					+ "email = ?, "
-					+ "birthDate = ?, "
-					+ "baseSalary = ?, "
-					+ "departmentId = ? "
-					+ "where id = ?"
-					);
+			cs.execute();	
 			
-			ps.setString(1, obj.getName());
-			ps.setString(2, obj.getEmail());
-			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
-			ps.setDouble(4, obj.getBaseSalary());
-			ps.setInt(5, obj.getDepartment().getId());
-			ps.setInt(6, obj.getId());
+//			cs.setInt(1, obj.getId());
+//			cs.setString(2, obj.getName());
+//			cs.setString(3, obj.getEmail());
+//			cs.setDate(4, obj.getBirthDate());
+//			cs.setDouble(5, obj.getBaseSalary());
+//			cs.setInt(6, obj.getDepartment().getId());
+						
+			String msgRetorno = cs.getString(7);
 			
-			int rowsAffect = ps.executeUpdate();
-			
-			if (rowsAffect == 1) {
-				conn.commit();
-				
-			} else {
-				conn.rollback();
-				throw new DbException("Linhas afetadas acima do esperado.");
-				
+			if (msgRetorno.contains("Erro") || msgRetorno.contains("Ora")) {
+				Alerts.alerts("Erro ao Atualizar o Registro", null, msgRetorno, AlertType.ERROR);
 			}
+			else {
+				Alerts.alerts(null, null, msgRetorno, AlertType.INFORMATION);
+			}
+			
+//			ps = conn.prepareStatement(
+//					"update seller set "
+//					+ "name = ?, "
+//					+ "email = ?, "
+//					+ "birthDate = ?, "
+//					+ "baseSalary = ?, "
+//					+ "departmentId = ? "
+//					+ "where id = ?"
+//					);
+			
+//			ps.setString(1, obj.getName());
+//			ps.setString(2, obj.getEmail());
+//			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+//			ps.setDouble(4, obj.getBaseSalary());
+//			ps.setInt(5, obj.getDepartment().getId());
+//			ps.setInt(6, obj.getId());
+			
 			
 		}
 		catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		}
 		finally {
-			DB.closeStatement(ps);
+			DB.closeCallableStatement(cs);
 		}
 		
 	}
@@ -114,27 +145,23 @@ public class SellerDaoJDBC implements SellerDao {
 	@Override
 	public void deleteById(Integer id) {
 
-		PreparedStatement ps = null;
+		CallableStatement cs = null;
+		
 		try {
 			
-			conn.setAutoCommit(false);
+			cs = conn.prepareCall("{call pkg_seller.prc_deleta_seller(?,?)}");
+			cs.registerOutParameter(1, OracleTypes.INTEGER);
+			cs.registerOutParameter(2, OracleTypes.VARCHAR);
+			cs.execute();
+						
+			String msgRetorno = cs.getString(2);
 			
-			ps = conn.prepareStatement(
-					"delete from seller "
-					+ "where id = ? "
-					);
-			
-			ps.setInt(1, id);
-			
-			int rowsAffected = ps.executeUpdate();
-			
-			if (rowsAffected == 1 ) {
-				conn.commit();
+			if (msgRetorno.contains("ERRO")) {
+				Alerts.alerts("Erro ao Deletar o Registro", null, msgRetorno, AlertType.ERROR);
 			}
 			else {
-				conn.rollback();
-				throw new DbException("Erro ao deletar o registro!!");
-			}
+				Alerts.alerts(null, null, msgRetorno, AlertType.INFORMATION);
+			};
 			
 		}
 		catch (SQLException e) {
@@ -142,7 +169,7 @@ public class SellerDaoJDBC implements SellerDao {
 			
 		}
 		finally {
-			DB.closeStatement(ps);
+			DB.closeCallableStatement(cs);
 		}
 	}
 
@@ -208,7 +235,6 @@ public class SellerDaoJDBC implements SellerDao {
 				rs.getString("name"), 
 				rs.getString("email"),
 				new java.util.Date(rs.getTimestamp("birthDate").getTime()),
-				//rs.getDate("birthDate"),
 				rs.getDouble("baseSalary"),
 				dep);
 
