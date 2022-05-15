@@ -44,23 +44,14 @@ public class SellerDaoJDBC implements SellerDao {
 			cs.registerOutParameter(6, OracleTypes.INTEGER);
 			cs.registerOutParameter(7, OracleTypes.VARCHAR);
 			
-			cs.execute();
-			
 			cs.setString(1, obj.getName());
 			cs.setString(2, obj.getEmail());
 			cs.setDate(3, new Date(obj.getBirthDate().getTime()));
 			cs.setDouble(4, obj.getBaseSalary());
 			cs.setInt(5, obj.getDepartment().getId());
-			cs.setInt(6, obj.getId());
 			
-			
-//			obj.setName(cs.getString(1));
-//			obj.setEmail(cs.getString(2));
-//			obj.setBirthDate(new java.util.Date(cs.getDate(3).getTime()));
-//			obj.setBaseSalary(cs.getDouble(4));
-//			obj.getDepartment().setId(5);
-//			obj.setId(6);
-			
+			cs.execute();
+
 			String msgRetorno = cs.getString(7);
 			
 			if (msgRetorno.contains("ERRO") || msgRetorno.contains("ORA")) {
@@ -96,15 +87,15 @@ public class SellerDaoJDBC implements SellerDao {
 			cs.registerOutParameter(6, OracleTypes.INTEGER);
 			cs.registerOutParameter(7, OracleTypes.VARCHAR);
 			
+			cs.setInt(1, obj.getId());
+			cs.setString(2, obj.getName());
+			cs.setString(3, obj.getEmail());
+			cs.setDate(4, new Date(obj.getBirthDate().getTime()));
+			cs.setDouble(5, obj.getBaseSalary());
+			cs.setInt(6, obj.getDepartment().getId());
+						
 			cs.execute();	
 			
-//			cs.setInt(1, obj.getId());
-//			cs.setString(2, obj.getName());
-//			cs.setString(3, obj.getEmail());
-//			cs.setDate(4, obj.getBirthDate());
-//			cs.setDouble(5, obj.getBaseSalary());
-//			cs.setInt(6, obj.getDepartment().getId());
-						
 			String msgRetorno = cs.getString(7);
 			
 			if (msgRetorno.contains("Erro") || msgRetorno.contains("Ora")) {
@@ -113,25 +104,7 @@ public class SellerDaoJDBC implements SellerDao {
 			else {
 				Alerts.alerts(null, null, msgRetorno, AlertType.INFORMATION);
 			}
-			
-//			ps = conn.prepareStatement(
-//					"update seller set "
-//					+ "name = ?, "
-//					+ "email = ?, "
-//					+ "birthDate = ?, "
-//					+ "baseSalary = ?, "
-//					+ "departmentId = ? "
-//					+ "where id = ?"
-//					);
-			
-//			ps.setString(1, obj.getName());
-//			ps.setString(2, obj.getEmail());
-//			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
-//			ps.setDouble(4, obj.getBaseSalary());
-//			ps.setInt(5, obj.getDepartment().getId());
-//			ps.setInt(6, obj.getId());
-			
-			
+					
 		}
 		catch (SQLException e) {
 			throw new DbException(e.getMessage());
@@ -152,6 +125,9 @@ public class SellerDaoJDBC implements SellerDao {
 			cs = conn.prepareCall("{call pkg_seller.prc_deleta_seller(?,?)}");
 			cs.registerOutParameter(1, OracleTypes.INTEGER);
 			cs.registerOutParameter(2, OracleTypes.VARCHAR);
+			
+			cs.setInt(1, id);
+			
 			cs.execute();
 						
 			String msgRetorno = cs.getString(2);
